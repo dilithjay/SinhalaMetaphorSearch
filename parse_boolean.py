@@ -22,7 +22,7 @@ def expression_to_dict(query):
     }
 
 
-def get_boolean_query(query):
+def get_formatted_boolean_query(query):
     highest_op = get_highest_operation(query)
     
     # Remove redundant external brackets
@@ -40,8 +40,8 @@ def get_boolean_query(query):
         return {
             "bool": {
                 "must": [
-                    get_boolean_query(query[:highest_op[2]].strip()),
-                    get_boolean_query(query[highest_op[2] + 3:].strip())
+                    get_formatted_boolean_query(query[:highest_op[2]].strip()),
+                    get_formatted_boolean_query(query[highest_op[2] + 3:].strip())
                 ]
             }
         }
@@ -49,8 +49,8 @@ def get_boolean_query(query):
         return {
             "bool": {
                 "should": [
-                    get_boolean_query(query[:highest_op[2]].strip()),
-                    get_boolean_query(query[highest_op[2] + 2:].strip())
+                    get_formatted_boolean_query(query[:highest_op[2]].strip()),
+                    get_formatted_boolean_query(query[highest_op[2] + 2:].strip())
                 ]
             }
         }
@@ -58,7 +58,7 @@ def get_boolean_query(query):
         return {
             "bool": {
                 "must_not": [
-                    get_boolean_query(query[highest_op[2] + 3:].strip())
+                    get_formatted_boolean_query(query[highest_op[2] + 3:].strip())
                 ]
             }
         }

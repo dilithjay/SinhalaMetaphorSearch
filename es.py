@@ -12,9 +12,19 @@ aggregations = {
     }
 }
 
+def search_all():
+    return es.search(
+        index='sinhala-song-metaphors',
+        body={
+            "size": 1000,
+            "query" : { "match_all" : {} },
+            "aggs": aggregations
+        }
+    )
+
 
 def search_filter(search_terms: tuple):
-    response = es.search(
+    return es.search(
         index='sinhala-song-metaphors',
         body={
             "size": 1000,
@@ -28,12 +38,10 @@ def search_filter(search_terms: tuple):
             "aggs": aggregations
         }
     )
-    
-    return response
 
 
 def search_regular(query: str):
-    response = es.search(
+    return es.search(
         index='sinhala-song-metaphors',
         body={
             "size": 1000,
@@ -41,5 +49,3 @@ def search_regular(query: str):
             "aggs": aggregations
         }
     )
-    
-    return response

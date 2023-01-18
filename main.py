@@ -1,8 +1,8 @@
 from h2o_wave import Q, main, app, ui, expando_to_dict
-from es import search_regular
+from es import search_all, search_regular
 
-from search import search_query
-from parse_boolean import get_boolean_query
+from search import language_to_bool_query, search_query
+from parse_boolean import get_formatted_boolean_query
 
 
 column_names = ['song', 'lyricist', 'artist', 'year', 'metaphor', 'source', 'target', 'meaning']
@@ -187,9 +187,15 @@ def filter_search(q: Q):
             if field in q.args and q.args[field]:
                 query += f'{field} "{q.args[field]}" '
                 q.client[field] = q.args[field]
-        res = search_query(query)
-        q.client.results = res['hits']['hits']
-        q.client.aggs = res['aggregations']            
+        
+        if query.strip():
+            query = language_to_bool_query(query)
+            formatted_query = get_formatted_boolean_query(query)
+            res = search_regular(formatted_query)
+        else:
+            res = search_all()
+            q.client.results = res['hits']['hits']
+            q.client.aggs = res['aggregations']            
 
 
 def query_search(q: Q, regular=True):
@@ -208,19 +214,18 @@ def query_search(q: Q, regular=True):
     
     if q.args.search_btn and q.args.search_bar:
         if regular:
-            res = search_query(q.args.search_bar)
-            q.client.results = res['hits']['hits']
-            q.client.aggs = res['aggregations']
+            query = language_to_bool_query(q.args.search_bar)
         else:
             query = q.args.search_bar
-            if query:
-                formatted_query = get_boolean_query(query)
-                res = search_regular(formatted_query)
-                q.client.results = res['hits']['hits']
-                q.client.aggs = res['aggregations']
-            else:
-                q.client.results = []
-                q.client.aggs = {}
+        
+        if query:
+            formatted_query = get_formatted_boolean_query(query)
+            res = search_regular(formatted_query)
+        else:
+            res = search_all()
+        
+        q.client.results = res['hits']['hits']
+        q.client.aggs = res['aggregations']
 
 
 def show_song_card(q, idx=None):
