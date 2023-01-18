@@ -2,13 +2,10 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 
-from es import search_filter
-
 stop_words = set(stopwords.words('english')).union({'domain', 'metaphor'})
-stop_words.remove('or')
-stop_words.remove('and')
-stop_words.remove('not')
-stop_words.remove("isn't")
+for word in ('or','and', 'not', "isn't"):
+    stop_words.remove(word)
+
 tokenizer = RegexpTokenizer(r'\w+|"')
 word_mapping = {
     'lyricist': 'lyricist', 'written': 'lyricist',
@@ -46,9 +43,3 @@ def language_to_bool_query(query: str) -> list:
             not_flag = True
     
     return query.strip()
-
-
-def search_query(query: str):
-    search_terms = language_to_bool_query(query)        
-    
-    return search_filter(search_terms)

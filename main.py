@@ -1,7 +1,7 @@
 from h2o_wave import Q, main, app, ui, expando_to_dict
 from es import search_all, search_regular
 
-from search import language_to_bool_query, search_query
+from language_search import language_to_bool_query
 from parse_boolean import get_formatted_boolean_query
 
 
