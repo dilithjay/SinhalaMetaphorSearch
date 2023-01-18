@@ -1,0 +1,120 @@
+{
+    "settings" : {
+        "index" : {
+            "analysis" : {
+            "analyzer" : {
+                "plain" : {
+                "filter" : [],
+                "tokenizer" : "standard"
+                },
+                "case_insensitive" : {
+                "filter" : ["lowercase"],
+                "tokenizer" : "standard"
+                },
+                "inflections" : {
+                  "filter" : ["porter_stem"],
+                  "tokenizer" : "standard"
+                },
+                "case_insensitive_and_inflections" : {
+                  "filter" : ["lowercase", "porter_stem"],
+                  "tokenizer" : "standard"
+                }
+            }
+          }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "Source": {
+              "type": "text",
+              "analyzer": "plain",
+              "fields": {
+                "case_insensitive": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive"
+                },
+                "inflections": {
+                  "type":  "text",
+                  "analyzer": "inflections"
+                },
+                "case_insensitive_and_inflections": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive_and_inflections"
+                }
+              }
+            },
+            "Target": {
+              "type": "text",
+              "analyzer": "plain",
+              "fields": {
+                "case_insensitive": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive"
+                },
+                "inflections": {
+                  "type":  "text",
+                  "analyzer": "inflections"
+                },
+                "case_insensitive_and_inflections": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive_and_inflections"
+                }
+              }
+            },
+            "Lyricist": {
+              "type": "text",
+              "analyzer": "plain",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                },
+                "case_insensitive": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive"
+                },
+                "inflections": {
+                  "type":  "text",
+                  "analyzer": "inflections"
+                },
+                "case_insensitive_and_inflections": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive_and_inflections"
+                }
+              }
+            },
+            "Artist": {
+              "type": "text",
+              "analyzer": "plain",
+              "fields": {
+                "case_insensitive": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive"
+                },
+                "inflections": {
+                  "type":  "text",
+                  "analyzer": "inflections"
+                },
+                "case_insensitive_and_inflections": {
+                  "type":  "text",
+                  "analyzer": "case_insensitive_and_inflections"
+                }
+              }
+            },
+            "Composer": {
+              "enabled": false
+            },
+            "Song": {
+              "enabled": false
+            },
+            "Lyrics": {
+              "enabled": false
+            },
+            "Album": {
+              "enabled": false
+            },
+            "Year": {
+              "type": "integer"
+            }
+        }
+    }
+}
