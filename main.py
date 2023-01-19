@@ -78,10 +78,6 @@ def get_description(tab: str):
     )
 
 
-def get_stats_table(results):
-    pass
-
-
 def get_results_table(results):
     rows = []
     if results:
@@ -147,16 +143,15 @@ def get_stat_card(aggs):
         ui.text_l('**Lyricists**')
     ]
     
-    for elem in aggs['solo_lyricists']['buckets']:
+    for elem in aggs['lyricist_stats']['buckets']:
         items.append(ui.text(f"*{elem['key']}* ({elem['doc_count']})"))
-    items.append(ui.text(f"Others ({aggs['solo_lyricists']['sum_other_doc_count']})"))
+    items.append(ui.text(f"Others ({aggs['lyricist_stats']['sum_other_doc_count']})"))
     
     
     return ui.form_card(
         box=stat_box,
         items=items
     )
-            
 
 
 def delete_result_cards(q: Q):

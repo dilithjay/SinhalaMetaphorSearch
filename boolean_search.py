@@ -1,4 +1,13 @@
-def get_highest_operation(query):
+def get_highest_operation(query: str) -> tuple:
+    """Get the details of the boolean operation at the highest level
+
+    Args:
+        query (str): The boolean query
+
+    Returns:
+        tuple: (level of the operation, operation, index of the operation in query)
+    """
+    
     highest_op = (float('inf'), '', 0)
     for op in ('OR', 'AND', 'NOT'):
         cur_level = 0
@@ -36,6 +45,7 @@ def get_formatted_boolean_query(query):
             cur_i += 1
         query = query[cur_i: len(query) - cur_i]
     
+    # Split the query string at the highest operation and process the halves seperately
     if highest_op[1] == 'AND':
         return {
             "bool": {

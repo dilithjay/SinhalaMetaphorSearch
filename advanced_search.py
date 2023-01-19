@@ -1,8 +1,8 @@
+# Define fields to be used for advanced search
+fields_no_analyzers = ['Lyricist', 'Artist', 'Source', 'Target']
 fields = [
-    'Lyricist.case_insensitive_and_inflections', 
-    "Artist.case_insensitive_and_inflections",
-    "Source.case_insensitive_and_inflections",
-    "Target.case_insensitive_and_inflections"
+    field + '.case_insensitive_and_inflections'
+    for field in fields_no_analyzers
 ]
 
 
@@ -14,7 +14,7 @@ def advanced_search_to_formatted_query(all_these, this_exact, any_these, none_th
             query['must'].append(
                 {'query_string': {
                     'query': term, 
-                    "fields": fields}
+                    'fields': fields}
                  }
             )
     if this_exact:
@@ -22,8 +22,8 @@ def advanced_search_to_formatted_query(all_these, this_exact, any_these, none_th
         query['must'].append(
             {
                 'query_string': {
-                    'query': this_exact, 
-                    "fields": fields
+                    'query': f'"{this_exact}"', 
+                    'fields': fields_no_analyzers
                 }
             }
         )
@@ -34,7 +34,7 @@ def advanced_search_to_formatted_query(all_these, this_exact, any_these, none_th
                 {
                     'query_string': {
                         'query': term, 
-                        "fields": fields
+                        'fields': fields
                     }
                 }
             )
@@ -45,7 +45,7 @@ def advanced_search_to_formatted_query(all_these, this_exact, any_these, none_th
                 {
                     'query_string': {
                         'query': term, 
-                        "fields": fields
+                        'fields': fields
                     }
                 }
             )
