@@ -1,8 +1,10 @@
 # Define fields to be used for advanced search
 fields_no_analyzers = ['Lyricist', 'Artist', 'Source', 'Target']
 fields = [
-    field + '.case_insensitive_and_inflections'
-    for field in fields_no_analyzers
+    'Lyricist.case_insensitive',
+    'Artist.case_insensitive',
+    'Source.case_insensitive_and_inflections',
+    'Target.case_insensitive_and_inflections'
 ]
 
 

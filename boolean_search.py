@@ -23,10 +23,16 @@ def get_highest_operation(query: str) -> tuple:
 
 def expression_to_dict(query):
     key, value = list(map(lambda x: x.strip(), query.split('==')))
+    analyzer = {
+        'Artist': 'case_insensitive',
+        'Lyricist': 'case_insensitive',
+        'Source': 'case_insensitive_and_inflections',
+        'Target': 'case_insensitive_and_inflections'
+    }
     
     return {
         "match": {
-            key.capitalize() + '.case_insensitive_and_inflections': value[1: -1]
+            key.capitalize() + '.' + analyzer[key.capitalize()]: value[1: -1]
         }
     }
 

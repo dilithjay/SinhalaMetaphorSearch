@@ -71,14 +71,6 @@
                 "case_insensitive": {
                   "type":  "text",
                   "analyzer": "case_insensitive"
-                },
-                "inflections": {
-                  "type":  "text",
-                  "analyzer": "inflections"
-                },
-                "case_insensitive_and_inflections": {
-                  "type":  "text",
-                  "analyzer": "case_insensitive_and_inflections"
                 }
               }
             },
@@ -89,14 +81,6 @@
                 "case_insensitive": {
                   "type":  "text",
                   "analyzer": "case_insensitive"
-                },
-                "inflections": {
-                  "type":  "text",
-                  "analyzer": "inflections"
-                },
-                "case_insensitive_and_inflections": {
-                  "type":  "text",
-                  "analyzer": "case_insensitive_and_inflections"
                 }
               }
             },
