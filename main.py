@@ -1,8 +1,9 @@
 from h2o_wave import Q, main, app, ui, expando_to_dict
+from advanced_search import advanced_search_to_formatted_query
 from es import search_all, search_regular
 
 from language_search import language_to_bool_query
-from parse_boolean import get_formatted_boolean_query
+from boolean_search import get_formatted_boolean_query
 
 
 column_names = ['song', 'lyricist', 'artist', 'year', 'metaphor', 'source', 'target', 'meaning']
@@ -17,8 +18,8 @@ result_v_start = 5
 result_h_end = 8
 result_box = f'1 {result_v_start} {result_h_end} -1'
 stat_box = f'{result_h_end + 1} {result_v_start} -1 6'
-tabs_box = '1 2 3 1'
-desc_box = '4 2 -1 1'
+tabs_box = '1 2 4 1'
+desc_box = '5 2 -1 1'
 song_box = '2 2 4 5'
 
 
@@ -51,6 +52,7 @@ def get_tabs(q: Q):
         items=[
             ui.tabs(name='tabs', value=q.client.tabs, items=[
                 ui.tab(name='filter', label='Filter Search'),
+                ui.tab(name='advanced', label='Advanced Search'),
                 ui.tab(name='language', label='Language Search'),
                 ui.tab(name='bool', label='Boolean Search'),
             ])
@@ -61,6 +63,7 @@ def get_tabs(q: Q):
 def get_description(tab: str):
     descriptions = {
         'filter': "Use the textboxes to specify the search criteria",
+        'advanced': "Specify what terms to include and what terms not include in the search results.",
         'language': "Type a query in the search bar to search for metaphors. \
                 Use `double quotes (\")` around search terms.\
                     \nE.g.: <span style=\"color: #00e1ff\">What are the metaphors with a source domain of `\"`tears`\"`? </span> ",
@@ -141,7 +144,7 @@ def get_stat_card(aggs):
         ui.separator(),
         ui.text_m(f"Year Range: `{int(aggs['year_stats']['min'])}` - `{int(aggs['year_stats']['max'])}`"),
         ui.separator(),
-        ui.text_l('**Solo Lyricists**')
+        ui.text_l('**Lyricists**')
     ]
     
     for elem in aggs['solo_lyricists']['buckets']:
@@ -182,20 +185,52 @@ def filter_search(q: Q):
     )
     
     if q.args.search_btn:
-        query = ""
+        queries = []
         for field in field_list:
             if field in q.args and q.args[field]:
-                query += f'{field} "{q.args[field]}" '
+                queries.append(f'{field} "{q.args[field]}"')
                 q.client[field] = q.args[field]
         
-        if query.strip():
-            query = language_to_bool_query(query)
+        if queries:
+            query = language_to_bool_query(' and '.join(queries))
             formatted_query = get_formatted_boolean_query(query)
             res = search_regular(formatted_query)
         else:
             res = search_all()
-            q.client.results = res['hits']['hits']
-            q.client.aggs = res['aggregations']            
+        q.client.results = res['hits']['hits']
+        q.client.aggs = res['aggregations']    
+
+
+def advanced_search(q: Q):
+    q.page['search_card'] = ui.form_card(
+        box=search_box,
+        title="",
+        items=[
+            ui.text_xl("Advanced Search"),
+            ui.inline([
+                ui.textbox('all_these', "All these words", width='300px', value=q.args['all_these'] or ""),
+                ui.textbox('this_exact', "This exact word or phrase", width='300px', value=q.args['this_exact'] or ""),
+                ui.textbox('any_these', "Any of these words", width='300px', value=q.args['any_these'] or ""),
+                ui.textbox('none_these', "None of these words", width='300px', value=q.args['none_these'] or "")
+            ], justify='between'),
+            ui.inline([
+                ui.toggle('tabular_results', "Tabular Results", value=q.client.tabular_results),
+                ui.button('search_btn', "Search", primary=True)
+            ], justify='end')
+        ]
+    )
+    
+    if q.args.search_btn:
+        formatted_query = advanced_search_to_formatted_query(
+            q.args['all_these'],
+            q.args['this_exact'],
+            q.args['any_these'],
+            q.args['none_these']
+        )
+        
+        res = search_regular(formatted_query)
+        q.client.results = res['hits']['hits']
+        q.client.aggs = res['aggregations']
 
 
 def query_search(q: Q, regular=True):
@@ -203,7 +238,7 @@ def query_search(q: Q, regular=True):
         box=search_box,
         title="",
         items=[
-            ui.text_xl("Query Search" if regular else "Boolean Search"),
+            ui.text_xl("Language Search" if regular else "Boolean Search"),
             ui.textbox('search_bar', "", width='100%', value=q.args['search_bar'] or ""),
             ui.inline([
                 ui.toggle('tabular_results', "Tabular Results", value=q.client.tabular_results),
@@ -256,7 +291,6 @@ def show_song_card(q, idx=None):
 
 @app('/')
 async def serve(q: Q):
-    # print(q.args)
     if not q.client.initialized:
         initialize(q)
     
@@ -281,6 +315,8 @@ async def serve(q: Q):
         
         if q.client.tabs == 'filter':
             filter_search(q)
+        elif q.client.tabs == 'advanced':
+            advanced_search(q)
         elif q.client.tabs == 'language':
             query_search(q)
         elif q.client.tabs == 'bool':
@@ -297,7 +333,7 @@ async def serve(q: Q):
                 q.page[f'result_card_{i}'] = card
                 q.client.result_card_names.append(f'result_card_{i}')
         
-        if q.client.aggs:
+        if q.client.aggs and q.client.results:
             q.page['stat_card'] = get_stat_card(q.client.aggs)
     
     await q.page.save()
