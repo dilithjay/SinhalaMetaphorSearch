@@ -12,4 +12,13 @@ curl -X PUT "localhost:9200/sinhala-song-metaphors?pretty" -H "Content-Type: app
 curl -X PUT "localhost:9200/sinhala-song-metaphors/_bulk?pretty" -H "Content-Type: application/json" -u elastic:elastic --data-binary @jsons/data.json
 ```
 
+### Install Requirements
+```
+pip install -r requirements.txt
+```
+
+### Run Application
+```
+wave run main
+```
 
